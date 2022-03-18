@@ -1,6 +1,7 @@
 # %%
 # Pandas is used for data manipulation
-import pandas as pd# Read in data and display first 5 rows
+import pandas as pd
+# Read in data and display first 5 rows
 features = pd.read_csv('temps.csv')
 features.head(5)
 
@@ -13,21 +14,27 @@ features.describe()
 
 # %%
 # One-hot encode the data using pandas get_dummies
-features = pd.get_dummies(features)# Display the first 5 rows of the last 12 columns
+features = pd.get_dummies(features)
+# Display the first 5 rows of the last 12 columns
 features.iloc[:,5:].head(5)
 
 # %%
 # Use numpy to convert to arrays
-import numpy as np# Labels are the values we want to predict
-labels = np.array(features['actual'])# Remove the labels from the features
+import numpy as np
+# Labels are the values we want to predict
+labels = np.array(features['actual'])
+# Remove the labels from the features
 # axis 1 refers to the columns
-features= features.drop('actual', axis = 1)# Saving feature names for later use
-feature_list = list(features.columns)# Convert to numpy array
+features= features.drop('actual', axis = 1)
+# Saving feature names for later use
+feature_list = list(features.columns)
+# Convert to numpy array
 features = np.array(features)
 
 # %%
 # Using Skicit-learn to split data into training and testing sets
-from sklearn.model_selection import train_test_split# Split the data into training and testing sets
+from sklearn.model_selection import train_test_split
+# Split the data into training and testing sets
 train_features, test_features, train_labels, test_labels = train_test_split(features, labels, test_size = 0.25, random_state = 42)
 
 # %%
@@ -78,7 +85,8 @@ tree = rf.estimators_[5]
 from sklearn.tree import export_graphviz
 import pydot
 # Pull out one tree from the forest
-tree = rf.estimators_[5]# Export the image to a dot file
+tree = rf.estimators_[5]
+# Export the image to a dot file
 export_graphviz(tree, out_file = 'tree.dot', feature_names = feature_list, rounded = True, precision = 1)
 
 # %%
@@ -187,4 +195,3 @@ plt.plot(true_data['date'], true_data['friend'], 'r-', label = 'friend', alpha =
 plt.legend(); plt.xticks(rotation = '60');
 # Lables and title
 plt.xlabel('Date'); plt.ylabel('Maximum Temperature (F)'); plt.title('Actual Max Temp and Variables');
-# %%

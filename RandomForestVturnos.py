@@ -2,7 +2,7 @@
 # Pandas is used for data manipulation
 import pandas as pd
 # Read in data and display first 5 rows
-features = pd.read_csv('temps.csv')
+features = pd.read_csv('IATurnosPredictor.csv')
 features.head(5)
 
 # %%
@@ -22,10 +22,10 @@ features.iloc[:,5:].head(5)
 # Use numpy to convert to arrays
 import numpy as np
 # Labels are the values we want to predict
-labels = np.array(features['actual'])
+labels = np.array(features['ResultadoEstado'])
 # Remove the labels from the features
 # axis 1 refers to the columns
-features= features.drop('actual', axis = 1)
+features= features.drop('ResultadoEstado', axis = 1)
 # Saving feature names for later use
 feature_list = list(features.columns)
 # Convert to numpy array
@@ -45,16 +45,16 @@ print('Testing Labels Shape:', test_labels.shape)
 
 # %%
 # The baseline predictions are the historical averages
-baseline_preds = test_features[:, feature_list.index('average')]
+baseline_preds = test_features[:, feature_list.index('RandomSeed')]
 # Baseline errors, and display average baseline error
 baseline_errors = abs(baseline_preds - test_labels)
-print('Average baseline error: ', round(np.mean(baseline_errors), 2))
+print('RandomSeed baseline error: ', round(np.mean(baseline_errors), 2))
 
 # %%
 # Import the model we are using
 from sklearn.ensemble import RandomForestRegressor
-# Instantiate model with 1000 decision trees
-rf = RandomForestRegressor(n_estimators = 10000, random_state = 42)
+# Instantiate model with 10000 decision trees
+rf = RandomForestRegressor(n_estimators = 1000, random_state = 42)
 # Train the model on training data
 rf.fit(train_features, train_labels);
 
@@ -122,7 +122,7 @@ feature_importances = sorted(feature_importances, key = lambda x: x[1], reverse 
 # New random forest with only the two most important variables
 rf_most_important = RandomForestRegressor(n_estimators= 1000, random_state=42)
 # Extract the two most important features
-important_indices = [feature_list.index('temp_1'), feature_list.index('average')]
+important_indices = [feature_list.index('Estado_Atendido')]
 train_important = train_features[:, important_indices]
 test_important = test_features[:, important_indices]
 # Train the random forest

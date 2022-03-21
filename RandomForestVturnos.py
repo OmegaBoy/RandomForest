@@ -1,4 +1,6 @@
 # %%
+n_estimators = 100
+# %%
 # Pandas is used for data manipulation
 import pandas as pd
 # Read in data and display first 5 rows
@@ -54,7 +56,7 @@ print('RandomSeed baseline error: ', round(np.mean(baseline_errors), 2))
 # Import the model we are using
 from sklearn.ensemble import RandomForestRegressor
 # Instantiate model with 1000 decision trees
-rf = RandomForestRegressor(n_estimators = 1000, random_state = 42)
+rf = RandomForestRegressor(n_estimators = n_estimators, random_state = 42)
 # Train the model on training data
 rf.fit(train_features, train_labels);
 
@@ -91,6 +93,7 @@ import pydot
 tree = rf.estimators_[5]
 
 # %%
+# Sanize the labels
 import unidecode
 for i in range(0, len(feature_list), 1):
     feature_list[i] = unidecode.unidecode(feature_list[i])
@@ -133,7 +136,7 @@ feature_importances = sorted(feature_importances, key = lambda x: x[1], reverse 
 
 # %%
 # New random forest with only the two most important variables
-rf_most_important = RandomForestRegressor(n_estimators= 1000, random_state=42)
+rf_most_important = RandomForestRegressor(n_estimators= n_estimators, random_state=42)
 # Extract the two most important features
 important_indices = [feature_list.index('Edad'), feature_list.index('IDTurnosReal')]
 train_important = train_features[:, important_indices]

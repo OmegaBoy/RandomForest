@@ -79,13 +79,6 @@ accuracy = 100 - np.mean(smape)
 print('Accuracy:', round(accuracy, 2), '%.')
 
 # %%
-# Calculate mean absolute percentage error (MAPE)
-mape = 100 * (errors / test_labels)
-# Calculate and display accuracy
-accuracy = 100 - np.mean(mape)
-print('Accuracy:', round(accuracy, 2), '%.')
-
-# %%
 # Import tools needed for visualization
 from sklearn.tree import export_graphviz
 import pydot

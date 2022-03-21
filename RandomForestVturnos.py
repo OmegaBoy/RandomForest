@@ -44,7 +44,7 @@ print('Testing Features Shape:', test_features.shape)
 print('Testing Labels Shape:', test_labels.shape)
 
 # %%
-# The baseline predictions are the historical averages
+# The baseline predictions are the random seed
 baseline_preds = test_features[:, feature_list.index('RandomSeed')]
 # Baseline errors, and display average baseline error
 baseline_errors = abs(baseline_preds - test_labels)
@@ -53,7 +53,7 @@ print('RandomSeed baseline error: ', round(np.mean(baseline_errors), 2))
 # %%
 # Import the model we are using
 from sklearn.ensemble import RandomForestRegressor
-# Instantiate model with 10000 decision trees
+# Instantiate model with 1000 decision trees
 rf = RandomForestRegressor(n_estimators = 1000, random_state = 42)
 # Train the model on training data
 rf.fit(train_features, train_labels);
@@ -65,6 +65,16 @@ predictions = rf.predict(test_features)
 errors = abs(predictions - test_labels)
 # Print out the mean absolute error (mae)
 print('Mean Absolute Error:', round(np.mean(errors), 2), 'degrees.')
+
+# %%
+# Calculate mean absolute percentage error (SMAPE)
+smape = 0
+for x in range(0, len(predictions), 1):
+    if predictions[x] + test_labels[x] != 0:
+        smape += ((test_labels[x] + predictions[x])) / (predictions[x])
+smape = smape / len(predictions)
+accuracy = 100 - np.mean(smape)
+print('Accuracy:', round(accuracy, 2), '%.')
 
 # %%
 # Calculate mean absolute percentage error (MAPE)
@@ -81,6 +91,9 @@ import pydot
 tree = rf.estimators_[5]
 
 # %%
+import unidecode
+for i in range(0, len(feature_list), 1):
+    feature_list[i] = unidecode.unidecode(feature_list[i])
 # Import tools needed for visualization
 from sklearn.tree import export_graphviz
 import pydot
@@ -99,7 +112,7 @@ graph.write_png('tree.png')
 
 # %%
 # Limit depth of tree to 3 levels
-rf_small = RandomForestRegressor(n_estimators=10, max_depth = 3)
+rf_small = RandomForestRegressor(n_estimators = 10, max_depth = 3)
 rf_small.fit(train_features, train_labels)
 # Extract the small tree
 tree_small = rf_small.estimators_[5]
@@ -122,7 +135,7 @@ feature_importances = sorted(feature_importances, key = lambda x: x[1], reverse 
 # New random forest with only the two most important variables
 rf_most_important = RandomForestRegressor(n_estimators= 1000, random_state=42)
 # Extract the two most important features
-important_indices = [feature_list.index('Estado_Atendido')]
+important_indices = [feature_list.index('Edad'), feature_list.index('IDTurnosReal')]
 train_important = train_features[:, important_indices]
 test_important = test_features[:, important_indices]
 # Train the random forest
@@ -149,50 +162,4 @@ plt.bar(x_values, importances, orientation = 'vertical')
 plt.xticks(x_values, feature_list, rotation='vertical')
 # Axis labels and title
 plt.ylabel('Importance'); plt.xlabel('Variable'); plt.title('Variable Importances');
-
-# %%
-# Use datetime for creating date objects for plotting
-import datetime
-# Dates of training values
-months = features[:, feature_list.index('month')]
-days = features[:, feature_list.index('day')]
-years = features[:, feature_list.index('year')]
-# List and then convert to datetime object
-dates = [str(int(year)) + '-' + str(int(month)) + '-' + str(int(day)) for year, month, day in zip(years, months, days)]
-dates = [datetime.datetime.strptime(date, '%Y-%m-%d') for date in dates]
-# Dataframe with true values and dates
-true_data = pd.DataFrame(data = {'date': dates, 'actual': labels})
-# Dates of predictions
-months = test_features[:, feature_list.index('month')]
-days = test_features[:, feature_list.index('day')]
-years = test_features[:, feature_list.index('year')]
-# Column of dates
-test_dates = [str(int(year)) + '-' + str(int(month)) + '-' + str(int(day)) for year, month, day in zip(years, months, days)]
-# Convert to datetime objects
-test_dates = [datetime.datetime.strptime(date, '%Y-%m-%d') for date in test_dates]
-# Dataframe with predictions and dates
-predictions_data = pd.DataFrame(data = {'date': test_dates, 'prediction': predictions})
-# Plot the actual values
-plt.plot(true_data['date'], true_data['actual'], 'b-', label = 'actual')
-# Plot the predicted values
-plt.plot(predictions_data['date'], predictions_data['prediction'], 'ro', label = 'prediction')
-plt.xticks(rotation = '60'); 
-plt.legend()
-# Graph labels
-plt.xlabel('Date'); plt.ylabel('Maximum Temperature (F)'); plt.title('Actual and Predicted Values');
-
-# %%
-# Make the data accessible for plotting
-true_data['temp_1'] = features[:, feature_list.index('temp_1')]
-true_data['average'] = features[:, feature_list.index('average')]
-true_data['friend'] = features[:, feature_list.index('friend')]
-# Plot all the data as lines
-plt.plot(true_data['date'], true_data['actual'], 'b-', label  = 'actual', alpha = 1.0)
-plt.plot(true_data['date'], true_data['temp_1'], 'y-', label  = 'temp_1', alpha = 1.0)
-plt.plot(true_data['date'], true_data['average'], 'k-', label = 'average', alpha = 0.8)
-plt.plot(true_data['date'], true_data['friend'], 'r-', label = 'friend', alpha = 0.3)
-# Formatting plot
-plt.legend(); plt.xticks(rotation = '60');
-# Lables and title
-plt.xlabel('Date'); plt.ylabel('Maximum Temperature (F)'); plt.title('Actual Max Temp and Variables');
 # %%

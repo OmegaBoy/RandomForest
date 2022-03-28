@@ -3,6 +3,7 @@ n_estimators = 100
 # %%
 # Pandas is used for data manipulation
 import pandas as pd
+from pyparsing import And
 # Read in data and display first 5 rows
 features = pd.read_csv('IATurnosPredictor.csv')
 features.head(5)
@@ -78,6 +79,30 @@ smape = smape / len(predictions)
 accuracy = 100 - np.mean(smape)
 print('Accuracy:', round(accuracy, 2), '%.')
 
+# %%
+for t in range(0, 11, 1):
+    threshold = t / 10
+    P = 0
+    TP = 0
+    N = 0
+    TN = 0
+    for i in range(0, len(predictions), 1):
+        if test_labels[i] == 1:
+            P = P + 1
+            if predictions[i] >= threshold:
+                if test_labels[i] == 1:
+                    TP = TP + 1
+        if test_labels[i] == 0:
+            N = N + 1
+            if predictions[i] < threshold:
+                if test_labels[i] == 0:
+                    TN = TN + 1
+    TPR = TP / P
+    TNR = TN / N
+    FPR = 1 - TNR
+    print('Threshold:', threshold)
+    print('TPR:', TPR)
+    print('FPR:', FPR)
 # %%
 # Import tools needed for visualization
 from sklearn.tree import export_graphviz

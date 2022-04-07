@@ -90,13 +90,11 @@ for t in range(0, 11, 1):
         if test_labels[i] == 1:
             P = P + 1
             if predictions[i] >= threshold:
-                if test_labels[i] == 1:
-                    TP = TP + 1
+                TP = TP + 1
         if test_labels[i] == 0:
             N = N + 1
             if predictions[i] < threshold:
-                if test_labels[i] == 0:
-                    TN = TN + 1
+                TN = TN + 1
     TPR = TP / P
     TNR = TN / N
     FPR = 1 - TNR

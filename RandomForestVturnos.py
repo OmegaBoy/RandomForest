@@ -5,7 +5,7 @@ n_estimators = 100
 import pandas as pd
 from pyparsing import And
 # Read in data and display first 5 rows
-features = pd.read_csv('IATurnosPredictor.csv')
+features = pd.read_csv('_IATurnos_Train.csv')
 features.head(5)
 
 # %%
@@ -25,10 +25,10 @@ features.iloc[:,5:].head(5)
 # Use numpy to convert to arrays
 import numpy as np
 # Labels are the values we want to predict
-labels = np.array(features['ResultadoEstado'])
+labels = np.array(features['CODSTATUS'])
 # Remove the labels from the features
 # axis 1 refers to the columns
-features= features.drop('ResultadoEstado', axis = 1)
+features= features.drop('CODSTATUS', axis = 1)
 # Saving feature names for later use
 feature_list = list(features.columns)
 # Convert to numpy array
@@ -80,8 +80,12 @@ accuracy = 100 - np.mean(smape)
 print('Accuracy:', round(accuracy, 2), '%.')
 
 # %%
-for t in range(0, 11, 1):
-    threshold = t / 10
+lThreshold = []
+lTPR = []
+lFPR = []
+d = 100
+for t in range(0, d + 1, 1):
+    threshold = t / d
     P = 0
     TP = 0
     N = 0
@@ -98,9 +102,14 @@ for t in range(0, 11, 1):
     TPR = TP / P
     TNR = TN / N
     FPR = 1 - TNR
-    print('Threshold:', threshold)
-    print('TPR:', TPR)
-    print('FPR:', FPR)
+
+    lThreshold.append(threshold)
+    lTPR.append(TPR)
+    lFPR.append(FPR)
+
+desmosThreshold = ",".join([str(element) for element in lThreshold])
+desmosTPR = ",".join([str(element) for element in lTPR])
+desmosFPR = ",".join([str(element) for element in lFPR])
 # %%
 # Import tools needed for visualization
 from sklearn.tree import export_graphviz
